@@ -11,7 +11,7 @@ module Facebook
       end
 
       if email_message?
-        return send_message(message('We sent offers to your email!'))
+        return send_message(message('please visit our website'))
       end
 
       send_message(welcome_message)
@@ -29,7 +29,20 @@ module Facebook
               id: sender_id
           },
           message: {
-              text: text
+              attachment: {
+                  type: 'template',
+                  payload: {
+                      template_type: 'button',
+                      text: text,
+                      buttons: [{
+                              type: 'web_url',
+                              url: 'https://www.truecar.com/prices-new/porsche/718-cayman-pricing',
+                              title: 'TrueCar',
+                              messenger_extensions: true,
+                              webview_height_ratio: 'full'
+                          }]
+                  }
+              }
           }
       }
     end
