@@ -6,15 +6,15 @@ module Facebook
     end
 
     def process_message
-      if(postback_payload === 'offers' || postback_payload === 'price')
+      if(postback_payload == 'offers' || postback_payload == 'price')
         return send_message(email_confirm_message)
       end
 
       if email_message?
-        return send_message(message('We sent offers to your email'))
+        return send_message(message('We sent offers to your email!'))
       end
 
-      send_message(post_back_message)
+      send_message(welcome_message)
     end
 
     private
@@ -34,7 +34,7 @@ module Facebook
       }
     end
 
-    def post_back_message
+    def welcome_message
       user = Facebook::MessengerClient.new.user_info(sender_id)
       {
           recipient: {
@@ -84,18 +84,15 @@ module Facebook
     end
 
     def sender_id
-      @bot_message[:messaging].first[:sender][:id]
+      @bot_message.dig(:messaging, 0, :sender, :id)
     end
 
     def postback_payload
-      @bot_message[:messaging].first[:postback][:payload] if @bot_message[:messaging].first[:postback].present?
+      @bot_message.dig(:messaging, 0, :postback, :payload)
     end
 
     def email_message?
-      @bot_message[:messaging].first[:message].present? &&
-          @bot_message[:messaging].first[:message][:nlp].present? &&
-          @bot_message[:messaging].first[:message][:nlp][:entities].present? &&
-          @bot_message[:messaging].first[:message][:nlp][:entities][:email].present?
+      @bot_message.dig(:messaging, 0, :message, :nlp, :entities, :email).present?
     end
   end
 end
